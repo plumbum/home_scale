@@ -35,10 +35,13 @@ int main(void)
     wdt_enable(WDTO_15MS);
 #endif
 
-    PORTB  = 0xFE;
+    PORTB  = 0xFC; // PB0 - debug pulse
     DDRB   = 0x01;
+
     PORTD  = 0xFF;
     DDRD   = (1<<1); // PD1 - TXD
+
+    ACSR |= (1<<ACD); // Disable comparator
 
     uartInit(UART9600);
 
@@ -52,7 +55,7 @@ int main(void)
         pack_done = 0;
         wdr();
         /* Go IDLE mode */
-        set_sleep_mode(SLEEP_MODE_IDLE);
+        set_sleep_mode(SLEEP_MODE_STANDBY);
         cli();
         if (1)
         {
@@ -63,6 +66,7 @@ int main(void)
         }
         sei();
 
+        MCUCR |= (1<<PUD);
         PORTB |= 1;
         /* Wait packet */
         while(pack_done == 0) wdr();
@@ -84,7 +88,9 @@ int main(void)
         uartPut('\r');
         uartPut('\n');
         uartTxComplete();
+        _delay_ms(1);
         PORTB &= ~1;
+        MCUCR &= ~(1<<PUD);
     }
 }
 

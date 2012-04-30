@@ -51,7 +51,7 @@ void uartPuts(char* s);
 void uartPutHex(uint8_t v);
 
 
-#define uartTxComplete() while ( !( UCSRA & (1<<TXC)) )
+#define uartTxComplete() do { while ( !( UCSRA & (1<<TXC)) ) wdr(); } while(0)
 
 #define uart16(u16) { uartPut((u16) & 0xFF); uartPut(((u16) & 0xFF00) >> 8); }
 #define uart32(u32) { uartPut((u32) & 0xFF); uartPut(((u32) & 0xFF00) >> 8); \

@@ -8,9 +8,9 @@ static uint8_t tmp_buf[8];
 static uint8_t bitcnt;
 
 
-SIGNAL(INT0_vect)
+SIGNAL(PCINT_vect)
 {
-    if(PIND & (1<<PD2))
+    if(PINB & (1<<PB1))
     {
         // Begin bit
         /* Start timer */
@@ -53,8 +53,9 @@ void pulseInit(void)
     pack_done = 0;
 
     /* Any logical change on INT0 generates an interrupt request. */
-    MCUCR = (MCUCR & 0xF0) | (1<<ISC00);
-    GIMSK |= (1<<INT0);
+    // MCUCR = (MCUCR & 0xF0) | (1<<ISC10);
+    PCMSK = (1<<1); // PB1 external interrupt
+    GIMSK |= (1<<PCIE);
 
     /* Timer 0 */
     TCCR0A = 0;
